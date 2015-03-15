@@ -1,0 +1,73 @@
+
+parameters:
+#    parameter_name: value
+
+services:
+#    service_name:
+#        class: AppBundle\Directory\ClassName
+#        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+    jsSchemaValidator:
+        class: Brainly\JValidator\Validator
+    apiInputDataMessageFactory:
+        class: Neuronet\ApiBundle\DataQueue\ApiInputDataMessageFactory
+    allowedCountriesProvider:
+        class: Neuronet\ApiBundle\Provider\AllowedCountriesYamlProvider
+        arguments: ["%allowed_countries_yaml_file_path%"]
+    allowedCurrenciesProvider:
+        class: Neuronet\ApiBundle\Provider\AllowedCurrenciesYamlProvider
+        arguments: ["%allowed_currencies_yaml_file_path%"]
+    amqpInputDataQueue:
+        class: Neuronet\ApiBundle\DataQueue\AMQPDataQueue
+        arguments: ["%amqp_input_data_queue.host%", "%amqp_input_data_queue.port%", "%amqp_input_data_queue.user%", "%amqp_input_data_queue.pass%", "%amqp_input_data_queue.vhost%", "%amqp_input_data_queue.exchange_name%" ]
+        properties:
+            routingKey: "%amqp_input_data_queue.inputDataRoutingKey%"
+    amqpInputDataProcessingQueue:
+        class: Neuronet\ApiBundle\DataQueue\AMQPDataQueue
+        arguments: ["%amqp_input_data_queue.host%", "%amqp_input_data_queue.port%", "%amqp_input_data_queue.user%", "%amqp_input_data_queue.pass%", "%amqp_input_data_queue.vhost%", "%amqp_input_data_queue.exchange_name%" ]
+        properties:
+            exchangeType: "%amqp_input_data_queue.exchange_type%"
+            queueName: "%amqp_input_data_queue.inputDataQueueName%"
+            routingKey: "%amqp_input_data_queue.inputDataRoutingKey%"
+        calls:
+            - [setMessageFactory, ["@apiInputDataMessageFactory"]]
+    amqpInternalDataQueue:
+        class: Neuronet\ApiBundle\DataQueue\AMQPDataQueue
+        arguments: ["%amqp_internal_data_queue.host%", "%amqp_internal_data_queue.port%", "%amqp_internal_data_queue.user%", "%amqp_internal_data_queue.pass%", "%amqp_internal_data_queue.vhost%", "%amqp_internal_data_queue.exchange_name%" ]
+        properties:
+            exchangeType: "%amqp_internal_data_queue.exchange_type%"
+    amqpInternalMessagesToSaveQueue:
+        class: Neuronet\ApiBundle\DataQueue\AMQPDataQueue
+        arguments: ["%amqp_internal_data_queue.host%", "%amqp_internal_data_queue.port%", "%amqp_internal_data_queue.user%", "%amqp_internal_data_queue.pass%", "%amqp_internal_data_queue.vhost%", "%amqp_internal_data_queue.exchange_name%" ]
+        properties:
+            exchangeType: "%amqp_internal_data_queue.exchange_type%"
+            queueName: "%amqp_internal_data_queue.messagesToSaveQueue%"
+            routingKey: "%amqp_internal_data_queue.messagesToSaveRoutingKey%"
+        calls:
+            - [setMessageFactory, ["@apiInputDataMessageFactory"]]
+    amqpInternalMessagesAvgByPAirQueue:
+        class: Neuronet\ApiBundle\DataQueue\AMQPDataQueue
+        arguments: ["%amqp_internal_data_queue.host%", "%amqp_internal_data_queue.port%", "%amqp_internal_data_queue.user%", "%amqp_internal_data_queue.pass%", "%amqp_internal_data_queue.vhost%", "%amqp_internal_data_queue.exchange_name%" ]
+        properties:
+            exchangeType: "%amqp_internal_data_queue.exchange_type%"
+        calls:
+            - [setMessageFactory, ["@apiInputDataMessageFactory"]]
+    app.inputData_controller:
+        class: Neuronet\ApiBundle\Controller\InputDataController
+        arguments: ["@jsSchemaValidator", "@amqpInputDataQueue"]
+    app.inputData.processingWorker:
+        class: Neuronet\ApiBundle\Command\InputDataProcessorCommand
+        arguments: ["@amqpInputDataProcessingQueue", "@amqpInternalDataQueue", "@allowedCountriesProvider", "@allowedCurrenciesProvider"]
+        tags:
+            - { name: console.command }
+    app.internalData.messagesSaver:
+        class: Neuronet\ApiBundle\Command\MessagesSaverCommand
+        arguments: ["@amqpInternalMessagesToSaveQueue"]
+        tags:
+            - { name: console.command }
+    app.internalData.transactionCountersByPair:
+        class: Neuronet\ApiBundle\Command\TransactionCountersByPairCommand
+        arguments: ["@amqpInternalMessagesToSaveQueue", "%amqp_internal_data_avg.queues_prefix%"]
+        tags:
+            - { name: console.command }
+        
+        

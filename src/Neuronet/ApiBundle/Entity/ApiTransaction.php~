@@ -1,0 +1,14 @@
+<?php
+namespace Neuronet\ApiBundle\Entity;
+class ApiTransaction
+{
+    public $userId;
+    public $currencyFrom;
+    public $currencyTo;
+    public $amountSell;
+    public $amountBuy;
+    public $rate;
+    public $timePlaced;
+    public $originatingCountry;
+}
+

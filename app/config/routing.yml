@@ -1,0 +1,7 @@
+app:
+    resource: @AppBundle/Controller/
+    type:     annotation
+data_input:
+    path: /data_input
+    defaults: {_controller: app.inputData_controller:inputDataAction}
+    methods:  [POST]

@@ -1,0 +1,24 @@
+parameters:
+    allowed_countries_yaml_file_path: "%kernel.root_dir%/config/allowedCountries.yml"
+    allowed_currencies_yaml_file_path: "%kernel.root_dir%/config/allowedCurrencies.yml"
+    amqp_input_data_queue.host: 127.0.0.1
+    amqp_input_data_queue.port: 5672
+    amqp_input_data_queue.user: api
+    amqp_input_data_queue.pass: api
+    amqp_input_data_queue.vhost: api
+    amqp_input_data_queue.exchange_name: apiEx
+    amqp_input_data_queue.exchange_type: direct
+    amqp_input_data_queue.inputDataQueueName: apiInputData
+    amqp_input_data_queue.inputDataRoutingKey: inputData
+    amqp_internal_data_queue.host: 127.0.0.1
+    amqp_internal_data_queue.port: 5672
+    amqp_internal_data_queue.user: api
+    amqp_internal_data_queue.pass: api
+    amqp_internal_data_queue.vhost: api
+    amqp_internal_data_queue.exchange_type: topic
+    amqp_internal_data_queue.exchange_name: internalData
+    amqp_internal_data_queue.messagesToSaveQueue: inputMessagesToSave
+    amqp_internal_data_queue.messagesToSaveRoutingKey: "#"
+    amqp_internal_data_avg.queues_prefix: avg
+    
+    

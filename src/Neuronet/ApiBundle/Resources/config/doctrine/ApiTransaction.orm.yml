@@ -1,0 +1,29 @@
+Neuronet\ApiBundle\Entity\ApiTransaction:
+    type: entity
+    table: apiTransaction
+    id:
+        id:
+            type: bigint
+            generator: { strategy: AUTO }
+    fields:
+        userId:
+            type: string
+            length: 100
+        currencyFrom:
+            type: string
+            length: 3
+        currencyTo:
+            type: string
+            length: 3
+        amountSell:
+            type: float
+        amountBuy:
+            type: float
+        rate:
+            type: float
+        originatingCountry:
+            type: string
+            length: 2
+        timePlaced:
+            type: datetime
+        

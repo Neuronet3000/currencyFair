@@ -1,0 +1,23 @@
+Neuronet\ApiBundle\Entity\CurrencyPairCounters:
+    type: entity
+    table: currencyPairCounters
+    id:
+        id:
+            type: bigint
+            generator: { strategy: AUTO }
+    fields:
+        currencyFrom:
+            type: string
+            length: 3
+        currencyTo:
+            type: string
+            length: 3
+        originatingCountry:
+            type: string
+            length: 2
+        totalSell:
+            type: float
+        totalBuy:
+            type: float
+        transactionsCnt:
+            type: bigint
